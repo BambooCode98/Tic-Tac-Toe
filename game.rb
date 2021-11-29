@@ -1,9 +1,10 @@
 class TicTacToe
 
-    attr_accessor :board
+    attr_accessor :board, :turn
 
     def initialize
         @board = ["","","","","","","","",""]
+        @turn = 0
     end
 
     WINNING_COMBINATIONS = [
@@ -18,18 +19,18 @@ class TicTacToe
     ]
 
     def board_display
-        p   "#{@board[0]} | #{@board[1]} | #{board[2]}"
-        p"_______"
-        p   "#{@board[3]} | #{@board[4]} | #{board[5]}"
-        p"_______"
-        p   "#{@board[6]} | #{@board[7]} | #{board[8]}"
+        puts   " #{@board[0]} | #{@board[1]} | #{board[2]} "
+        puts "________"
+        puts   " #{@board[3]} | #{@board[4]} | #{board[5]} "
+        puts "________"
+        puts   " #{@board[6]} | #{@board[7]} | #{board[8]} "
     end
 
     def input_to_index(input_number)
         input_number.to_i - 1
     end
 
-    def move(index, player_token = "x")
+    def move(index, player_token)
         @board[index] = player_token
     end
 
@@ -46,39 +47,41 @@ class TicTacToe
         end
     end
 
-    def turn_count(index)
-        turn = 0
+    def turn_count()
+        @turn = 0
         @board.each do |index|
             if index == "x" || index == "o"
-                turn += 1
+                @turn += 1
             end
         end
-        p "Round: #{turn}"
+        # p "Round: #{turn}"
+        @turn
     end
 
     def current_player?()
-        if turn_count(index) % 2 == 0
-            "x"
+        player = ""
+        if turn_count() % 2 == 0
+            player = "x"
         else
-            "o"
+            player = "o"
         end
+        player
     end
 
-    def turn
+    def turns
         p "enter 1-9: "
         input_number = gets.chomp
         index = input_to_index(input_number)
         if valid_move?(index)
-            move(index, player_token = "x")
-            turn_count(index)
-            board_display()
+            move(index, current_player?())
         else
-            turn()
+            turns()
         end
+        board_display()
     end
 
     def won?
-        WINNING_COMBINATIONS.each do |win_combo|
+        WINNING_COMBINATIONS.detect do |win_combo|
             @board[win_combo[0]] == @board[win_combo[1]] &&
             @board[win_combo[1]] == @board[win_combo[2]] &&
             position_taken?(win_combo[0])
@@ -98,13 +101,35 @@ class TicTacToe
     end
 
     def over?
-        
+        if won?() || draw?() || full?()
+            p "game over"
+        end
+    end
 
+    def winner?()
+        if won?()
+            p "x won"
+        else won?()
+            p "o won"
+        end
+    end
 
+    def play
+        until over?()
+            p "Round #{@turn}"
+            turns()
+        end
 
+        if won?()
+            winner = winner?()
+            p "Winner is #{winner}"
+        else draw?() 
+            p "draw"
+        end
+    end
 end
 
 
 game = TicTacToe.new
-game.turn
+game.play
 # the above goes in a class method turn or something
